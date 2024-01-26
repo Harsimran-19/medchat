@@ -1,0 +1,8 @@
+langchain
+transformers
+sentence-transformers
+accelerate
+torch
+faiss-cpu
+streamlit
+llama-cpp-python
