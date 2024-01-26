@@ -18,7 +18,7 @@ db_retriever = db.as_retriever(search_type="similarity",search_kwargs={"k": 3})
 callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
 
 llm = LlamaCpp(
-model_path=r"C:\Users\TESS\Downloads\mistral-7b-instruct-v0.1.Q4_K_M.gguf",
+model_path="mistral-7b-instruct-v0.1.Q4_K_M.gguf",
 temperature=0.75,
 max_tokens=2000,
 n_ctx = 4000,
