@@ -58,6 +58,7 @@ model_path="stablelm-zephyr-3b.Q4_K_M.gguf",
 temperature=0.75,
 max_tokens=2000,
 n_ctx = 4000,
+n_batch=126,
 top_p=1)
 
 
