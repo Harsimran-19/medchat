@@ -54,7 +54,7 @@ db = FAISS.load_local("faiss_index", embeddings)
 db_retriever = db.as_retriever(search_type="similarity",search_kwargs={"k": 3})
 
 llm = LlamaCpp(
-model_path=r"C:\Users\TESS\Downloads\stablelm-zephyr-3b.Q4_K_M.gguf",
+model_path="stablelm-zephyr-3b.Q4_K_M.gguf",
 temperature=0.75,
 max_tokens=2000,
 n_ctx = 4000,
