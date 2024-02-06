@@ -67,7 +67,7 @@ ANSWER
 prompt = PromptTemplate(template=custom_prompt_template,
                         input_variables=['context', 'question', 'chat_history'])
 
-TOGETHER_AI_API= os.environ.getattribute("TOGETHER_AI")
+TOGETHER_AI_API= os.environ('TOGETHER_AI')
 llm = Together(
     model="mistralai/Mistral-7B-Instruct-v0.2",
     temperature=0.7,
