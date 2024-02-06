@@ -7,6 +7,7 @@ from langchain.memory import ConversationBufferWindowMemory
 from langchain.chains import ConversationalRetrievalChain
 import streamlit as st
 import time
+st.set_page_config(page_title="MedChat", page_icon="favicon.png")
 
 col1, col2, col3 = st.columns([1,4,1])
 with col2:
