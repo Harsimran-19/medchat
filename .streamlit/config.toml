@@ -2,4 +2,4 @@
 base="light"
 
 [browser]
-serverPort = 8503
+serverPort = 80
