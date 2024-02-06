@@ -1,7 +1,8 @@
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.prompts import PromptTemplate
-from langchain_community.llms import LlamaCpp
+from langchain_together import Together
+import os
 from langchain.memory import ConversationBufferWindowMemory
 from langchain.chains import ConversationalRetrievalChain
 import streamlit as st
@@ -50,30 +51,28 @@ if "memory" not in st.session_state:
     st.session_state.memory = ConversationBufferWindowMemory(k=3, memory_key="chat_history",return_messages=True) 
 
 embeddings = HuggingFaceEmbeddings(model_name="BAAI/llm-embedder")
-db = FAISS.load_local("faiss_index", embeddings)
+db = FAISS.load_local("fdb_pg1_a", embeddings)
 db_retriever = db.as_retriever(search_type="similarity",search_kwargs={"k": 3})
 
-llm = LlamaCpp(
-model_path="stablelm-zephyr-3b.Q4_K_M.gguf",
-temperature=0.75,
-max_tokens=2000,
-n_ctx = 4000,
-n_batch=126,
-top_p=1)
+custom_prompt_template = """This is a chat tempalte and you are a medical practitioner lmm who provides correct medical information. Use the given following pieces of information to answer the user's question correctly. Utilize the provided knowledge base and search for relevant information. Follow the question format closely. The information should be abstract and concise. Understand all the context given here and generate only the answer. If you don't know the answer, just say that you don't know, don't try to make up an answer.
 
+CONTEXT: {context}
 
-custom_prompt_template = """You are a medical practitioner who provides right medical information. Use the given following pieces of information to answer the user's question correctly. If you don't know the answer, just say that you don't know, don't try to make up an answer. Utilize the provided knowledge base and search for relevant information. Follow and answer the question format closely. Give only the important information. The information should be abstract, high quality content and comprehensive.
+CHAT HISTORY: {chat_history}
 
-Context: {context}
+QUESTION: {question}
 
-History: {chat_history}
-
-Question: {question}
-
-Answer:
+ANSWER
 """
 prompt = PromptTemplate(template=custom_prompt_template,
                         input_variables=['context', 'question', 'chat_history'])
+
+llm = Together(
+    model="mistralai/Mistral-7B-Instruct-v0.2",
+    temperature=0.7,
+    max_tokens=1024,
+    together_api_key=f"{os.environ.getattribute("TOGETHER_AI")}"
+)
 
 qa = ConversationalRetrievalChain.from_llm(
     llm=llm,
