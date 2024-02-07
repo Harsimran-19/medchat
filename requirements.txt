@@ -5,4 +5,3 @@ accelerate
 faiss-cpu
 streamlit
 langchain-together
-llama-cpp-python
