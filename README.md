@@ -1,6 +1,6 @@
 ---
-title: MedChat
-emoji: 👀
+title: MedChat - AI Chatbot for Indian Medicines 💊
+emoji: 💊
 colorFrom: purple
 colorTo: gray
 sdk: streamlit
