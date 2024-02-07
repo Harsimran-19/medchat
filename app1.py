@@ -52,10 +52,10 @@ if "memory" not in st.session_state:
     st.session_state.memory = ConversationBufferWindowMemory(k=3, memory_key="chat_history",return_messages=True) 
 
 embeddings = HuggingFaceEmbeddings(model_name="BAAI/llm-embedder")
-db = FAISS.load_local("fdb_pg1_a", embeddings)
-db_retriever = db.as_retriever(search_type="similarity",search_kwargs={"k": 3})
+db = FAISS.load_local("medchat_db", embeddings)
+db_retriever = db.as_retriever(search_type="similarity",search_kwargs={"k": 2})
 
-custom_prompt_template = """This is a chat tempalte and you are a medical practitioner lmm who provides correct medical information. Use the given following pieces of information to answer the user's question correctly. Utilize the provided knowledge base and search for relevant information. Follow the question format closely. The information should be abstract and concise. Understand all the context given here and generate only the answer. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+custom_prompt_template = """This is a chat tempalte and you are a medical practitioner lmm who provides correct medical information. You are given the following pieces of information to answer the user's question correctly. Choose only the required context based on the user's question. Utilize the provided knowledge base and search for relevant information. Follow the question format closely. The information should be abstract and concise. Understand all the context given here and generate only the answer. If you don't know the answer, just say that you don't know, don't try to make up an answer.
 
 CONTEXT: {context}
 
