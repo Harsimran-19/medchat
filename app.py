@@ -51,7 +51,7 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 if "memory" not in st.session_state:
-    st.session_state.memory = ConversationBufferWindowMemory(k=3, memory_key="chat_history",return_messages=True) 
+    st.session_state.memory = ConversationBufferWindowMemory(k=2, memory_key="chat_history",return_messages=True) 
 
 embeddings = HuggingFaceEmbeddings(model_name="BAAI/llm-embedder")
 db = FAISS.load_local("medchat_db", embeddings)
