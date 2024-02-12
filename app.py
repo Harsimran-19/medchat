@@ -3,6 +3,8 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain_together import Together
 import os
+from langchain.retrievers.document_compressors import EmbeddingsFilter
+from langchain.retrievers import ContextualCompressionRetriever
 from langchain.memory import ConversationBufferWindowMemory
 from langchain.chains import ConversationalRetrievalChain
 import streamlit as st
@@ -55,7 +57,7 @@ embeddings = HuggingFaceEmbeddings(model_name="BAAI/llm-embedder")
 db = FAISS.load_local("medchat_db", embeddings)
 db_retriever = db.as_retriever(search_type="similarity",search_kwargs={"k": 3})
 
-custom_prompt_template = """This is a chat tempalte and you are a medical practitioner lmm who provides correct medical information. You are given the following pieces of information to answer the user's question correctly. Choose only the required context based on the user's question. Utilize the provided knowledge base and search for relevant information. Follow the question format closely. The information should be abstract and concise. Understand all the context given here and generate only the answer. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+custom_prompt_template = """This is a chat tempalte and you are a medical practitioner LLM who provides correct medical information. The way you speak should be in a doctor's perspective. You are given the following pieces of information to answer the user's question correctly. You will be given context, chat history and the question. Choose only the required context based on the user's question. If the follow-up questions are not related to the chat history, then don't use the history. Use chat history when required for similar related questions. While searching for the relevant information always give priority to the context given. If there are multiple medicines same medicine name and different strength then tell the user about it so that the next question by the user will be more specific. Utilize the provided knowledge base and search for relevant information from the context. Follow the user's question and the format closely. The answer should be abstract and concise. Understand all the context given here and generate only the answer, don't repeat the chat template in the answer. If you don't know the answer, just say that you don't know, don't try to make up an answer.
 
 CONTEXT: {context}
 
@@ -63,7 +65,7 @@ CHAT HISTORY: {chat_history}
 
 QUESTION: {question}
 
-ANSWER
+ANSWER:
 """
 prompt = PromptTemplate(template=custom_prompt_template,
                         input_variables=['context', 'question', 'chat_history'])
@@ -76,10 +78,15 @@ llm = Together(
     together_api_key=f"{TOGETHER_AI_API}"
 )
 
+embeddings_filter = EmbeddingsFilter(embeddings=embeddings, similarity_threshold=0.80)
+compression_retriever = ContextualCompressionRetriever(
+    base_compressor=embeddings_filter, base_retriever=db_retriever
+)
+
 qa = ConversationalRetrievalChain.from_llm(
     llm=llm,
     memory=st.session_state.memory,
-    retriever=db_retriever,
+    retriever=compression_retriever,
     combine_docs_chain_kwargs={'prompt': prompt}
 )
 
