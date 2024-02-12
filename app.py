@@ -72,7 +72,7 @@ prompt = PromptTemplate(template=custom_prompt_template,
 
 TOGETHER_AI_API= os.environ['TOGETHER_AI']
 llm = Together(
-    model="mistralai/Mistral-7B-Instruct-v0.2",
+    model="mistralai/Mixtral-8x7B-Instruct-v0.1",
     temperature=0.7,
     max_tokens=1024,
     together_api_key=f"{TOGETHER_AI_API}"
