@@ -53,9 +53,9 @@ if "messages" not in st.session_state:
 if "memory" not in st.session_state:
     st.session_state.memory = ConversationBufferWindowMemory(k=2, memory_key="chat_history",return_messages=True) 
 
-embeddings = HuggingFaceEmbeddings(model_name="BAAI/llm-embedder")
+embeddings = HuggingFaceEmbeddings(model_name="nomic-ai/nomic-embed-text-v1",model_kwargs={"trust_remote_code":True})
 db = FAISS.load_local("medchat_db", embeddings)
-db_retriever = db.as_retriever(search_type="similarity",search_kwargs={"k": 3})
+db_retriever = db.as_retriever(search_type="similarity",search_kwargs={"k": 4})
 
 custom_prompt_template = """Follow these instructions clearly. This is a chat tempalte and you are a medical practitioner chat bot who provides correct medical information. The way you speak should be in a doctor's perspective. You are given the following pieces of information to answer the user's question correctly. You will be given context, chat history and the question. Choose only the required context based on the user's question. If the question is not related to the chat history, then don't use the history. Use chat history when required for similar related questions. While searching for the relevant information always give priority to the context given. If there are multiple medicines same medicine name and different strength mention them. Always take the context related only to the question. Use your won knowledge base and answer the question when the context is not related to the user's question. Utilize the provided knowledge base and search for relevant information from the context. Follow the user's question and the format closely. The answer should be abstract and concise. Understand all the context given here and generate only the answer, don't repeat the chat template in the answer. If you don't know the answer, just say that you don't know, don't try to make up your own questions and answers. Add bullet points and bold text using markdown in the required area if needed, to make it more pleasing to eyes.
 
