@@ -5,3 +5,4 @@ accelerate
 faiss-cpu
 streamlit
 langchain-together
+einops
