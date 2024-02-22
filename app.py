@@ -80,14 +80,11 @@ llm = Together(
 )
 
 embeddings_filter = EmbeddingsFilter(embeddings=embeddings, similarity_threshold=0.80)
-compression_retriever = ContextualCompressionRetriever(
-    base_compressor=embeddings_filter, base_retriever=db_retriever
-)
 
 qa = ConversationalRetrievalChain.from_llm(
     llm=llm,
     memory=st.session_state.memory,
-    retriever=compression_retriever,
+    retriever=db_retriever,
     combine_docs_chain_kwargs={'prompt': prompt}
 )
 
