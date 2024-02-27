@@ -3,12 +3,11 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain_together import Together
 import os
-from langchain.retrievers.document_compressors import EmbeddingsFilter
-from langchain.retrievers import ContextualCompressionRetriever
 from langchain.memory import ConversationBufferWindowMemory
 from langchain.chains import ConversationalRetrievalChain
 import streamlit as st
 import time
+
 st.set_page_config(page_title="MedChat", page_icon="favicon.png")
 
 col1, col2, col3 = st.columns([1,4,1])
@@ -53,11 +52,11 @@ if "messages" not in st.session_state:
 if "memory" not in st.session_state:
     st.session_state.memory = ConversationBufferWindowMemory(k=2, memory_key="chat_history",return_messages=True) 
 
-embeddings = HuggingFaceEmbeddings(model_name="nomic-ai/nomic-embed-text-v1",model_kwargs={"trust_remote_code":True})
+embeddings = HuggingFaceEmbeddings(model_name="nomic-ai/nomic-embed-text-v1",model_kwargs={"trust_remote_code":True, "revision":"289f532e14dbbbd5a04753fa58739e9ba766f3c7"})
 db = FAISS.load_local("medchat_db", embeddings)
 db_retriever = db.as_retriever(search_type="similarity",search_kwargs={"k": 4})
 
-custom_prompt_template = """Follow these instructions clearly. This is a chat tempalte and you are a medical practitioner chat bot who provides correct medical information. The way you speak should be in a doctor's perspective. You are given the following pieces of information to answer the user's question correctly. You will be given context, chat history and the question. Choose only the required context based on the user's question. If the question is not related to the chat history, then don't use the history. Use chat history when required for similar related questions. While searching for the relevant information always give priority to the context given. If there are multiple medicines same medicine name and different strength mention them. Always take the context related only to the question. Use your won knowledge base and answer the question when the context is not related to the user's question. Utilize the provided knowledge base and search for relevant information from the context. Follow the user's question and the format closely. The answer should be abstract and concise. Understand all the context given here and generate only the answer, don't repeat the chat template in the answer. If you don't know the answer, just say that you don't know, don't try to make up your own questions and answers. Add bullet points and bold text using markdown in the required area if needed, to make it more pleasing to eyes.
+prompt_template = """<s>[INST]Follow these instructions carefully: You are a medical practitioner chatbot providing accurate medical information, adopting a doctor's perspective in your responses. Utilize the provided context, chat history, and question, choosing only the necessary information based on the user's query. Do not reference chat history if irrelevant to the current question; only use it for similar-related queries. Prioritize the given context when searching for relevant information, emphasizing clarity and conciseness in your responses. If multiple medicines share the same name but have different strengths, ensure to mention them. Exclude any mention of medicine costs. Stick to context directly related to the user's question, and use your knowledge base to answer inquiries outside the given context. Abstract and concise responses are key; do not repeat the chat template in your answers. If you lack information, simply state that you don't know. Avoid creating your own questions and answers. Enhance readability with markdown, incorporating bullet points and bold text when necessary.
 
 CONTEXT: {context}
 
@@ -66,9 +65,10 @@ CHAT HISTORY: {chat_history}
 QUESTION: {question}
 
 ANSWER:
+</s>[INST]
 """
 
-prompt = PromptTemplate(template=custom_prompt_template,
+prompt = PromptTemplate(template=prompt_template,
                         input_variables=['context', 'question', 'chat_history'])
 
 TOGETHER_AI_API= os.environ['TOGETHER_AI']
@@ -78,8 +78,6 @@ llm = Together(
     max_tokens=1024,
     together_api_key=f"{TOGETHER_AI_API}"
 )
-
-embeddings_filter = EmbeddingsFilter(embeddings=embeddings, similarity_threshold=0.80)
 
 qa = ConversationalRetrievalChain.from_llm(
     llm=llm,
