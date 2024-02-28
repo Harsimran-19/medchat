@@ -12,7 +12,7 @@ st.set_page_config(page_title="MedChat", page_icon="favicon.png")
 
 col1, col2, col3 = st.columns([1,4,1])
 with col2:
-    st.image("https://github.com/harshitv804/MedChat/assets/100853494/95962c34-029b-4f19-97d0-18146dd1e1f3")
+    st.image("https://github.com/harshitv804/MedChat/assets/100853494/86b9efcc-32cd-42ae-a2ce-90e5c6c0401e")
 
 st.markdown(
     """
