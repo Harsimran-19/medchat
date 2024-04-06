@@ -1,7 +1,8 @@
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.prompts import PromptTemplate
-from langchain_together import Together
+# from langchain_together import Together
+from langchain_community.llms import HuggingFaceEndpoint
 import os
 from langchain.memory import ConversationBufferWindowMemory
 from langchain.chains import ConversationalRetrievalChain
@@ -71,13 +72,18 @@ ANSWER:
 prompt = PromptTemplate(template=prompt_template,
                         input_variables=['context', 'question', 'chat_history'])
 
-TOGETHER_AI_API= os.environ['TOGETHER_AI']
-llm = Together(
-    model="mistralai/Mistral-7B-Instruct-v0.2",
-    temperature=0.7,
-    max_tokens=512,
-    together_api_key=f"{TOGETHER_AI_API}"
+# TOGETHER_AI_API= os.environ['TOGETHER_AI']
+repo_id = "mistralai/Mistral-7B-Instruct-v0.2"
+
+llm = HuggingFaceEndpoint(
+    repo_id=repo_id, max_length=512, temperature=0.7, token=HUGGINGFACEHUB_API_TOKEN
 )
+# llm = Together(
+#     model="mistralai/Mistral-7B-Instruct-v0.2",
+#     temperature=0.7,
+#     max_tokens=512,
+#     together_api_key=f"{TOGETHER_AI_API}"
+# )
 
 qa = ConversationalRetrievalChain.from_llm(
     llm=llm,
