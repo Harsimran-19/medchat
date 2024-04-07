@@ -72,7 +72,7 @@ ANSWER:
 prompt = PromptTemplate(template=prompt_template,
                         input_variables=['context', 'question', 'chat_history'])
 
-HUGGINGFACEHUB_API_TOKEN os.environ['HUGGINGFACEHUB_API_TOKEN']
+HUGGINGFACEHUB_API_TOKEN=os.environ['HUGGINGFACEHUB_API_TOKEN']
 repo_id = "mistralai/Mistral-7B-Instruct-v0.2"
 
 llm = HuggingFaceEndpoint(
